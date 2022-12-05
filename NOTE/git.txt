@@ -1,0 +1,6 @@
+git init
+git add --all
+git commit -m "commit"
+git branch -M main   
+git remote add origin https://github.com/HoangAnh271/example-fastapi.git
+git push -u origin main
