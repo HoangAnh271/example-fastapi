@@ -1,0 +1,99 @@
+
+# main pre-version
+@app.get("/realestates", response_model=List[schemas.RealEstate])
+def get_real_estates(db: Session = Depends(get_db)):
+
+    real_estates = db.query(models.RealEstate).all()
+    return real_estates
+
+
+@app.post("/realestates", status_code=status.HTTP_201_CREATED, response_model=schemas.RealEstate)
+def create_real_estates(real_estate: schemas.RealEstateCreate, db: Session = Depends(get_db)):
+    # cursor.execute("""INSERT INTO real_estates (name, description, price) VALUES (%s, %s, %s) RETURNING * """,
+    #                (real_estate.name, real_estate.description, real_estate.price))
+    # new_real_estate = cursor.fetchone()
+
+    # conn.commit()
+
+    new_real_estate = models.RealEstate(**real_estate.dict())
+    db.add(new_real_estate)
+    db.commit()
+    db.refresh(new_real_estate)
+    return new_real_estate
+
+
+@app.get("/realestates/{id}", response_model=schemas.RealEstate)
+def get_real_estate(id: int, db: Session = Depends(get_db)):
+    # cursor.execute("""SELECT * FROM real_estates WHERE id = %s """, (str(id)))
+    # real_estate = cursor.fetchone()
+
+    real_estate = db.query(models.RealEstate).filter(
+        models.RealEstate.id == id).first()
+    if not real_estate:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"real estate with id: {id} was not found")
+    return real_estate
+
+
+@app.delete("/realestates/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_real_estate(id: int, db: Session = Depends(get_db)):
+    # cursor.execute(
+    #     """DELETE FROM real_estates WHERE id = %s RETURNING *""", (str(id)))
+    # deleted_real_estate = cursor.fetchone()
+
+    # conn.commit()
+    real_estate = db.query(models.RealEstate).filter(
+        models.RealEstate.id == id)
+
+    if real_estate.first() == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"real estate with id: {id} does not exist")
+    real_estate.delete(synchronize_session=False)
+    db.commit()
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@app.put("/realestates/{id}", response_model=schemas.RealEstate)
+def update_real_estate(id: int, updated_real_estate: schemas.RealEstateCreate, db: Session = Depends(get_db)):
+    # cursor.execute("""UPDATE real_estates SET name = %s, description = %s, price = %s WHERE id = %s RETURNING *""",
+    #                (real_estate.name, real_estate.description, real_estate.price, str(id)))
+    # updated_real_estate = cursor.fetchone()
+
+    # conn.commit()
+
+    real_estate_query = db.query(models.RealEstate).filter(
+        models.RealEstate.id == id)
+
+    real_estate = real_estate_query.first()
+
+    if real_estate == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"post with {id} does not exist")
+
+    real_estate_query.update(updated_real_estate.dict(),
+                             synchronize_session=False)
+    db.commit()
+    return real_estate_query.first()
+
+
+@app.post("/users", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
+def created_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    hash_password = utils.hash(user.password)
+    user.password = hash_password
+    new_user = models.User(**user.dict())
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+
+@app.get("/users/{id}", response_models=schemas.UserOut)
+def get_user(id: int, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == id).first()
+
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"User with id: {id} does not exist")
+
+    return user

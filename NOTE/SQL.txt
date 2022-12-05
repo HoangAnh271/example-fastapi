@@ -1,0 +1,23 @@
+SELECT * FROM products;
+
+INSERT INTO products (price, name, inventory) VALUES (1000, 'bike', 20), (100, 'mouse', 20), (20, 'wood', 30) returning *;
+
+DELETE FROM products WHERE id = 10;
+
+DELETE FROM products WHERE id = 11 RETURNING *;
+
+DELETE FROM products WHERE inventory = 0;
+
+UPDATE products SET name = 'flower' price = 40 WHERE id = 25;
+
+UPDATE products SET is_sale = true WHERE id = 30 RETURNING *;
+
+UPDATE products SET is_sale = true WHERE id > 15 RETURNING *;
+
+
+
+
+
+
+
+

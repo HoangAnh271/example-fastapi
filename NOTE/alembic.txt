@@ -1,0 +1,9 @@
+alembic init alembic
+alembic revision -m "<name_file>"
+alembic current
+alembic heads
+alembic upgrade <revision_key>
+alembic downgrade <revision_key>
+alembic revision --autogenerate -m "<name_file>"
+
+alembic --help
