@@ -5,7 +5,11 @@ git branch -M main
 git remote add origin https://github.com/HoangAnh271/example-fastapi.git
 <<<<<<< HEAD
 git push -u origin main
+// switch remote
 git branch --set-upstream-to=origin/main 
+//
 =======
 git push -u origin main
 >>>>>>> 6887ca255ee66f34e2f163715728f2a1bd2a3cb5
+git branch -a
+git pull FastApi main --allow-unrelated-histories
