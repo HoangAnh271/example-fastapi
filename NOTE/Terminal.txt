@@ -1,0 +1,6 @@
+python3 -m venv venv
+source env/bin/activate
+deactivate
+(ENV)$ deactivate
+$ rm -r /path/to/ENV
+uvicorn app.main:app
